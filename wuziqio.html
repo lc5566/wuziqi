@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			#bg{
+				position: fixed;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				margin: auto;
+				background-image:url(bg1_01.jpg),url(bg1_02.jpg);
+				background-position: left bottom,right bottom;
+				background-repeat: no-repeat,no-repeat;
+				height: 100%;
+				width: 100%;
+			}
+			#canbox{
+				position: fixed;
+				left: 0;
+				right: 0;
+				top: 0;
+				bottom: 0;
+				height: 450px;
+				width: 750px;
+				margin: auto;
+			}
+			#canvas{
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: 0;
+				bottom: 0;
+				margin: auto;
+				box-shadow: 0 0 5px #000;
+				background: #c98635;
+			}
+			.box{
+				width: 150px;
+				height: 200px;
+				position: absolute;
+				
+			}
+			.box:first-of-type{
+				left: 0;
+				bottom:0;
+				background-image:url(heihe.png);
+				background-position: center center;
+				background-repeat: no-repeat;
+			}
+			.box:last-of-type{
+				right: 0;
+				bottom: 0;
+				background-image:url(baihe.png);
+				background-position: center center,left bottom;
+				background-repeat: no-repeat;			
+			}
+			.time{
+				position: absolute;
+				left: 70px;
+				bottom: 0;
+				font-size: 26px;
+				
+			}
+			#bcan{
+				position: absolute;
+				left: 50px;
+				top:61px;
+			}
+			#kuang{
+				width: 100px;
+				height: 40px;
+				color: #fff;
+				font-family: "微软雅黑";
+				line-height: 40px;
+				text-align: center;
+				background: rgba(0,0,0,0.8);
+				margin-left: 100px;
+			}
+			.beg{
+				position: fixed;
+				left: 0;
+				right: 0;
+				top: 0;
+				bottom: 0;
+				margin: auto;
+				height: 500px;
+				width: 750px;
+				z-index: 10;
+				background: #fff;
+				display: block;
+				animation: shanghua 1s ease-in-out 1 forwards paused;
+			}
+			@keyframes shanghua{
+				from{
+					transform:translateY(0);
+				}
+				20%{
+					transform:translateY(50px);
+				}
+				to{
+					transform:translateY(-800px);
+				}
+			}
+			.kuw{
+				background: url(kuang.png) no-repeat center center;
+				width: 160px;
+				height: 46px;
+				font-size: 25px;
+				line-height: 46px;
+				text-align: center;
+				margin: 80px auto;
+				cursor: pointer;
+			}
+			.kuw:hover{
+				color: blue;
+			}
+			#logo{
+				width: 100%;
+				height: 200px;
+				background: url(logo.png) no-repeat center center;
+				background-size:contain;
+			}
+			#qipu{
+				margin-right: 150px;
+				margin-top: 200px;
+				margin-bottom: 100px;
+			}
+			#dow{
+				margin-right: 150px;
+				margin-top:0;
+				position: relative;
+			}
+			#dow a{
+				position: absolute;
+				z-index: 1;
+				width: 100%;
+				height: 100%;
+				left: 0;
+				top: 0;
+			}
+			#pve,#pvp{
+				position: absolute;
+				left: 150px;
+				top:200px;
+				margin: 0;
+			}
+			#pvp{
+				top:300px;
+			}
+			.kuw .active{
+				color:red;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="bg">
+			<div class="kuw" id="qipu">
+				生成棋谱
+			</div>
+			<div class="kuw" id="dow">
+				下载棋谱
+			</div>
+			<div class="kuw" id="pve">人机对战</div>
+			<div class="kuw" id="pvp">玩家对战</div>
+		</div>
+		<div class="beg">
+			<div id="logo"></div>
+			<div class="kuw" id="begin">
+				开始游戏
+			</div>
+			<div class="kuw">
+				游戏说明
+			</div>
+		</div>
+		<div id="canbox">
+			<div class="box">
+				<!--<div class="time">00:30</div>-->
+			</div>
+			<div class="box">
+				<!--<div class="time">00:30</div>-->
+			</div>
+			<canvas id="canvas" width="450" height="450"></canvas>
+		</div>
+		<audio src="luozi.wav" id="audio"></audio>
+	</body>
+</html>
+<script src="jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	$(function () {
+//		var canvas=document.getElementById("canvas");
+//		var ctx=canvas.getContext('2d');
+//		var sep=30;
+//		var sR=3;
+//		var bR=24;
+//		var flag=true;
+//		var qi={};
+//		var audio=document.getElementById("audio");
+//		var time=$(".time");
+//		var colorT;
+//		var s=30;
+//		var t;
+//		var begin=$("#begin");
+//		var beg=$(".beg").eq(0);
+//		var qipu=$("#qipu");
+//		var dow=$("#dow");
+//		var kong={};
+//		var pvp=true;
+//		
+//	}
+	var canvas=document.getElementById("canvas");
+	var ctx=canvas.getContext("2d");
+	var audio=document.getElementById("audio")
+	var step=30;
+	var sr=3;
+	var br=14;
+	var flag=true;
+	var color;
+	var arr=[];
+	var qizi={};
+	var u=0;
+	var v=0;
+	var m;
+	var n;
+	var count=0;
+	var gamestate=false;		//游戏的状态
+	var kong={}
+	var begin=$("#begin");
+	var box=$(".box");
+	var beg=$(".beg").eq(0);
+	begin.on("click",function  () {
+		beg.css("animation-play-state","running");
+	})
+	function l(x){					//核心函数
+		return (x+0.5)*step+0.5
+	}
+	function drawQipan(){			//棋盘
+		ctx.clearRect(0,0,600,600)
+		ctx.save();
+		ctx.beginPath();
+		for(var i=0;i<15;i++){
+		ctx.moveTo(l(i),l(0))
+		ctx.lineTo(l(i),l(14))
+		ctx.moveTo(l(0),l(i))
+		ctx.lineTo(l(14),l(i))
+		}
+		ctx.stroke()
+		ctx.closePath()
+		ctx.restore();
+		for(var i=0;i<15;i++){
+			for(var j=0;j<15;j++){
+				kong[p(i,j)]=true;
+			}
+		}
+		cir(3,3)
+		cir(11,3)
+		cir(7,7)
+		cir(3,11)
+		cir(11,11)
+	}
+	function cir(a,b){				//小圆点
+		ctx.save();
+		ctx.translate(l(a),l(b))
+		ctx.beginPath();
+		ctx.arc(0,0,sr,0,Math.PI*2)
+		ctx.fill();
+		ctx.closePath();
+		ctx.restore();
+	}
+	function luozi(x1,y1,z1){	//落子
+		console.log(x1,y1)
+		ctx.save();
+		ctx.translate(l(x1),l(y1))
+		ctx.beginPath();
+		var g=ctx.createRadialGradient(-5,-7,1,0,0,15)
+		ctx.shadowOffsetX = 2;
+	  	ctx.shadowOffsetY = 2;
+	  	ctx.shadowBlur = 2;
+	  	ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+		if(z1=="black"){
+			g.addColorStop(0.1,"#eee")
+			g.addColorStop(0.2,"#ccc")
+			g.addColorStop(0.3,"#999")
+			g.addColorStop(0.5,"#000")
+		}else{
+			g.addColorStop(0.1,"#fff")
+		
+			g.addColorStop(0.5,"#eee")
+		}
+		ctx.arc(0,0,br,0,Math.PI*2)
+		ctx.fillStyle=g;
+		ctx.fill();
+		ctx.closePath();
+		ctx.restore();
+		qizi[x1+"_"+y1]=z1;
+	}
+	function ai(){
+		var pos={};
+		var pos={};
+		var max=0;
+		var max2=0;
+		for(var k in kong){
+			if(kong[k]){
+				var x=parseInt(k.split("_")[0]);
+				var y=parseInt(k.split("_")[1])
+				if(judge(x,y,"black")>max){
+					max=judge(x,y,"black")
+					pos={x:x,y:y}
+				}
+				if(judge(x,y,"white")>max2){
+					max2=judge(x,y,"white")
+					pos2={x:x,y:y}
+				}
+			}
+		}
+		if(max2>=max){
+			return pos2;
+		}else{
+			return  pos;
+		}
+	}
+	function p(a,b){
+		return a+"_"+b;
+	}
+	function judge(x,y,val){					//判别是否成功
+		var row=1;
+		i=1; while(qizi[p(x+i,y)]===val){
+				i++;
+				row++;
+			}	
+		i=1; while(qizi[p(x-i,y)]===val){
+				i++;
+				row++;
+		}	
+		var col=1;
+		i=1; while(qizi[p(x,y+i)]===val){
+				i++;
+				col++
+			}	
+		i=1; while(qizi[p(x,y-i)]===val){
+				i++;
+				col++
+		}	
+		var zx=1;
+		i=1; while(qizi[p(x+i,y+i)]===val){
+				i++;
+				zx++
+			}	
+		i=1; while(qizi[p(x-i,y-i)]===val){
+				i++;
+				zx++
+		}	
+		var yx=1;
+		i=1; while(qizi[p(x+i,y-i)]===val){
+				i++;
+				yx++
+			}	
+		i=1; while(qizi[p(x-i,y+i)]===val){
+				i++;
+				yx++
+		}	
+		return Math.max(row,col,zx,yx)
+	}
+	function chessBox(){					//添加棋谱
+		var i=1;
+		ctx.save();
+		ctx.font="20px 微软雅黑"
+		ctx.textBaseline="middle"
+		ctx.textAlign="center"
+		for(var k in qizi){
+			if(qizi[k]=='white'){
+				ctx.fillStyle="black"
+			}else{
+				ctx.fillStyle="white"
+			}
+			var arr=k.split("_");
+			ctx.fillText(i++,l(parseInt(arr[0])),l(parseInt(arr[1])))
+		}
+		ctx.restore()
+		$("#qi1").addClass("active")
+		if($("#qi1").find("img").length){
+			$("#qi1").find("img").attr("src",canvas.toDataURL()).appendTo("#qi1")
+			$("#qi1").find("img").attr("href",canvas.toDataURL()).attr("download","my.png").appendTo("#qi1")
+		}
+		else{
+			$("<img>").attr("src",canvas.toDataURL()).appendTo("#qi1")
+			$("<a>").attr("href",canvas.toDataURL()).attr("download","my.png").appendTo("#qi1")
+		}
+	}
+	function victory(e){
+		 m=Math.floor(e.offsetX/step)
+		 n=Math.floor(e.offsetY/step)
+		audio.play()
+		if(qizi[m+"_"+n]){
+			return
+		}
+		if(flag){
+			luozi(m,n,"black")
+			console.log(kong)
+			if(judge(m,n,"black")>=5){
+//				$("#qi2").addClass("active")
+//				$("#word").html("黑子")
+				alert("黑棋赢了")
+				$(canvas).off("click")
+			}
+			delete kong[p(m,n)]
+			var x2=ai().x
+			var y2=ai().y
+			luozi(x2,y2,"white")
+			if(judge(x2,y2,"white")>=5){
+//				$("#qi2").addClass("active")
+//				$("#word").html("白子")
+				alert("白棋赢了")
+				$(canvas).off("click")
+			}
+			console.log(x2,y2)
+			delete kong[p(x2,y2)]
+		}
+		return false;
+}	
+	
+	$(canvas).on("click",victory)					//画布点击
+	                //再来一局
+	drawQipan();
+})
+</script>
